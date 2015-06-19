@@ -1,0 +1,159 @@
+#crossorder fieldset {
+    border: 1px solid grey;
+    padding: 10px;
+
+}
+
+#crossorder_orig ul li.ui-state-highlight,
+#crossorder_order ul li.ui-state-highlight {
+    border: 4px white dotted;
+    visibility: visible;
+    min-height: 43px;
+    background: transparent !important;
+}
+
+#crossorder_orig,
+#crossorder_order {
+    background: rgb(223, 223, 223);
+    width: 40%;
+	list-style-type: none;
+	margin: 0;
+	display: inline-block;
+	margin-right: 10px;
+	padding: 10px;
+	border-radius: 6px;
+	vertical-align: top;
+    min-height: 400px;
+}
+
+#crossorder_orig {
+	overflow-y: auto;
+	height: 600px;	
+}
+#crossorder_order {
+	top:35px;
+	overflow-y: auto;
+	height: 600px;
+}
+
+#crossorder_order ul {
+    min-height: 400px !important;
+}
+
+#crossorder_orig ul,
+#crossorder_order ul {
+	list-style-type: none;
+	margin: 0;
+	margin-right: 10px;
+	vertical-align: top;
+	min-height: 30px;
+}
+#crossorder_orig li,
+#crossorder_order li {
+    padding: 15px;
+    font-size: 1.2em;
+    width:auto;
+	background: rgb(249, 249, 249);
+	border-top: 1px solid rgb(255, 255, 255);
+	border-bottom: 1px solid rgb(223, 223, 223);
+	margin: 0; 
+	border-radius: 2px; 
+}
+#crossorder_orig li:nth-child(2n+1),
+#crossorder_order li:nth-child(2n+1) {
+	background-color: rgb(252, 252, 252);;
+}
+
+#crossorder_orig li:hover,
+#crossorder_order li:hover {
+	background-color: rgb(236, 236, 236);
+	border-top: 1px solid rgb(223, 223, 223);
+}
+
+#crossorder_orig li .id,
+#crossorder_order li .id,
+#crossorder_orig li .sticky,
+#crossorder_order li .sticky,
+#crossorder_orig li .status,
+#crossorder_order li .status,
+#crossorder_orig li .post_type,
+#crossorder_order li .post_type {
+    text-align: center;
+    font-size: 11px;
+    margin-right: 10px;
+}
+#crossorder_orig li .status,
+#crossorder_order li .status {
+	margin-right: -2px;
+}
+#crossorder_orig li .sticky,
+#crossorder_order li .sticky,
+#crossorder_orig li .status,
+#crossorder_order li .status,
+#crossorder_orig li .post_type,
+#crossorder_order li .post_type,
+#crossorder_orig li .id a,
+#crossorder_order li .id a {
+	color: white;
+	text-decoration: none;
+    background-color: rgb(187, 187, 187);
+    border-radius: 5px;
+    padding: 3px 6px;
+}
+#crossorder_orig li .id a,
+#crossorder_order li .id a {
+	background-color: rgb(33, 117, 155);
+	background-image: linear-gradient(to bottom, rgb(42, 149, 197), rgb(33, 117, 155));
+}
+#crossorder_orig li .id a:hover,
+#crossorder_order li .id a:hover {
+	background-color: rgb(213, 78, 33);
+	background-image: linear-gradient(to bottom, rgb(213, 78, 33), rgb(233,72,19));
+}
+#crossorder_orig li .status,
+#crossorder_order li .status {
+	background-color: rgb(213, 78, 33);
+
+}
+#crossorder_orig li .sticky,
+#crossorder_order li .sticky {
+	background-color: rgb(0, 0, 0);
+}
+#crossorder_orig li .title,
+#crossorder_order li .title {
+	display: block;
+	color: rgb(33, 117, 155);
+	font-size: 14px !important;
+	font-weight: bold;
+	padding-top: 10px;
+}
+#crossorder_orig li .indate, #crossorder_order li .indate {
+    background: green;
+}
+.datepicker > .datepicker_inner_container > .datepicker_timelist > div.timelist_item  {
+    color: #999;
+}
+#crossorder .program.active {
+    min-width: 296px;
+    display: inline-block;
+    padding: 0px 4px;
+}
+#crossorder .program .show {
+    display: inline;
+    cursor: pointer;
+}
+#crossorder .program .close {
+    cursor: pointer;
+}
+#crossorder .program .hidden {
+    display: none;
+}
+#crossorder .program.active .show {
+    display: none;
+}
+#crossorder .program.active .hidden {
+    display: inline;
+}
+#crossorder .program input.crosstime {
+    width: 110px;
+}
