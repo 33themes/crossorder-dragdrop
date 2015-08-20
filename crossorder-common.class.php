@@ -87,6 +87,10 @@ class CrossOrder_Common {
         return false;
     }
 
+    function filter_exists($key) {
+        return $this->_the_base($key);
+    }
+
     function _get_blog_post_id( $value ) {
 
         if ( strpos($value,'-') === false ) {
