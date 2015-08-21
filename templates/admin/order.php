@@ -36,29 +36,30 @@ if (defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE) {
                 // setup_postdata( $this->post ); 
                 ?>
                 <li>
-                    <span class="blog_id">
-                        <a href="#">
-                        <?php echo $this->the_loop_blog_id(); ?>
-                        </a>
+                    <span class="blog_info">
+                        <span class="blog_id"><?php echo $this->the_loop_blog_id(); ?></span>
+                        <span class="blog_name"><?php echo $this->the_loop_blog_name(); ?></span>
                     </span>
 
-                    <span class="id"><a href="<?php the_permalink(); ?>" target="_blank"><?php echo $this->the_loop_id(); ?></a></span>
-                    <span class="post_type"><?php echo $this->the_loop_post_type(); ?></span>
+                    <span class="flag id"><a href="<?php echo $this->loop_post->_edit_link; ?>" target="_blank"><?php echo $this->the_loop_id(); ?></a></span>
+                    <span class="flag post_type"><?php echo $this->the_loop_post_type(); ?></span>
                     <?php if ( is_sticky( $this->the_loop_id() ) ): ?>
-                        <span class="sticky">sticky</span>
+                        <span class="flag sticky">sticky</span>
                     <?php endif; ?>
                     
 
                     
                     <?php if ( ( $status = get_post_status( get_the_ID() ) ) != 'publish' ): ?>
-                        <span class="status"><?php echo get_post_status( get_the_ID() ); ?></span>
+                        <span class="flag status"><?php echo get_post_status( get_the_ID() ); ?></span>
                     <?php endif; ?>
                     
                     <?php if ( get_the_date('U') > time() ): ?>
-                        <span class="status schedule"><?php the_time( get_option('date_format') ); ?></span>
+                        <span class="flag status schedule"><?php the_time( get_option('date_format') ); ?></span>
                     <?php endif; ?>
 
                     <span class="title"><?php echo $this->the_loop_title(); ?></span>
+
+                    <span class="add">+</span>
                 </li>
                 <?php
                 if (defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE)
@@ -79,38 +80,37 @@ if (defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE) {
             <ul class="connectedSortable">
             <?php while( $WP_query->have_posts() ): $WP_query->the_post(); ?>
                 <li>
-                    <span class="blog_id">
-                        <a href="#">
-                            <?php echo $WP_query->post->blog_id; ?>
-                        </a>
+                    <span class="blog_info">
+                        <span class="blog_id"><?php echo $WP_query->post->blog_id; ?></span>
+                        <span class="blog_name"><?php echo $WP_query->post->blog_name; ?></span>
                     </span>
 
-                    <span class="id">
-                        <a href="<?php the_permalink(); ?>" target="_blank">
+                    <span class="flag id">
+                        <a href="<?php echo $WP_query->post->_edit_link; ?>" target="_blank">
                             <?php echo $WP_query->post->ID; ?>
                         </a>
                     </span>
 
-                    <span class="post_type"><?php echo get_post_type( get_the_ID() ); ?></span>
+                    <span class="flag post_type"><?php echo get_post_type( get_the_ID() ); ?></span>
                     <?php if ( is_sticky( get_the_ID() ) ): ?>
                         <span class="sticky">sticky</span>
                     <?php endif; ?>
 
                     <?php if ( ( $status = get_post_status( get_the_ID() ) ) != 'publish' ): ?>
-                        <span class="status"><?php echo get_post_status( get_the_ID() ); ?></span> 
+                        <span class="flag status"><?php echo get_post_status( get_the_ID() ); ?></span> 
                     <?php endif; ?>
                     
                     <?php if ( get_the_date('U') > time() ): ?>
-                        <span class="status schedule"><?php the_time( get_option('date_format') ); ?></span>
+                        <span class="flag status schedule"><?php the_time( get_option('date_format') ); ?></span>
 
                     <?php endif; ?>
 
                     
                     <?php if ( $WP_query->post->_crossorder_in_date ): ?>
-                        <span class="status indate"><?php _e('In date'); ?></span>
+                        <span class="flag status indate"><?php _e('In date'); ?></span>
                     <?php endif; ?>
 
-                    <span class="status program <?php echo ( ( $WP_query->post->_crossorder_from > 0 || $WP_query->post->_crossorder_to > 0 ) ? 'active' : '' ); ?>">
+                    <span class="flag status program <?php echo ( ( $WP_query->post->_crossorder_from > 0 || $WP_query->post->_crossorder_to > 0 ) ? 'active' : '' ); ?>">
                         <span class="show"><?php _e('Set dates'); ?></span>
 
                         <span class="selectors hidden">
@@ -123,6 +123,8 @@ if (defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE) {
                     </span>
 
                     <span class="title"><?php the_title(); ?></span>
+
+                    <span class="remove">-</span>
                 </li>
             <?php endwhile; ?>
             </ul>

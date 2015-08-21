@@ -5,7 +5,7 @@ class CrossOrder_Common {
     const okey = 'crossorder';
 
     function __construct( $type = 'front' ) {
-        $this->init();
+
     }
 
     function restore_current_blog() {
@@ -37,6 +37,10 @@ class CrossOrder_Common {
             add_option( self::okey.'_'.$name, $value );
         }
         return get_option( self::okey.'_'.$name );
+    }
+
+    function remove_bkey($name) {
+        delete_option( self::okey.'_'.$name );
     }
 
     function _slug( $name ) {
@@ -87,8 +91,21 @@ class CrossOrder_Common {
         return false;
     }
 
-    function filter_exists($key) {
-        return $this->_the_base($key);
+    private function _filter_exists($key) {
+        $this->filters = $this->bkey('filters');
+        if (isset($this->filters[$key]))
+            return $this->filters[$key];
+
+        return false;        
+    }
+
+    public function filter_exists($key) {
+        if (is_object($this))
+            return $this->_filter_exists($key);
+        else {
+            $a = new CrossOrder_Common();
+            return $a->_filter_exists($key);
+        }
     }
 
     function _get_blog_post_id( $value ) {
@@ -212,7 +229,13 @@ class CrossOrder_Common {
             switch_to_blog($this->post->blog_id);
         }
 
+        $this->post->blog_name = get_bloginfo('name');
         $post = $this->post;
+
+        if (is_admin()) {
+            $s = get_post_type_object($post->post_type);
+            $post->_edit_link = get_admin_url().sprintf($s->_edit_link, $post->ID).'&action=edit';
+        }
         setup_postdata( $post );
     }
 
@@ -278,8 +301,9 @@ class CrossOrder_Common {
         return $query;
     }
 
-
-
 }
 
-?>
+
+
+class CrossOrder extends CrossOrder_common {
+}

@@ -5,13 +5,14 @@ class CrossOrderAdmin extends CrossOrder_Common {
     private $role_order = 'edit_pages';
     private $role_edit = 'manage_options';
 
-    
-    function init() {
+    public function __construct($type = 'admin') {
+        $_style = TTTINC_CROSSORDER.'/crossorder-dragdrop.php';
+
         add_action('admin_menu', array( &$this, 'admin_menu' ));
-        wp_enqueue_script( 'jquery-simple-datetimepicker', plugins_url('/templates/admin/js/jquery.simple-dtpicker.js',__FILE__), array( 'jquery' )  );
-        wp_enqueue_script( 'CrossOrder', plugins_url('/templates/admin/js/crossorder.js',__FILE__), array( 'jquery','jquery-ui-core','jquery-ui-widget','jquery-ui-mouse','jquery-ui-sortable','jquery-simple-datetimepicker' )  );
-        wp_enqueue_style( 'jquery-simple-datetimepicker', plugins_url('templates/admin/css/jquery.simple-dtpicker.css', __FILE__) );
-        wp_enqueue_style( 'CrossOrder', plugins_url('templates/admin/css/crossorder.css', __FILE__) );
+        wp_enqueue_script( 'jquery-simple-datetimepicker', plugins_url('/templates/admin/js/jquery.simple-dtpicker.js',$_style), array( 'jquery' )  );
+        wp_enqueue_script( 'CrossOrder', plugins_url('/templates/admin/js/crossorder.js', $_style), array( 'jquery','jquery-ui-core','jquery-ui-widget','jquery-ui-mouse','jquery-ui-sortable','jquery-simple-datetimepicker' )  );
+        wp_enqueue_style( 'jquery-simple-datetimepicker', plugins_url('/templates/admin/css/jquery.simple-dtpicker.css', $_style) );
+        wp_enqueue_style( 'CrossOrder', plugins_url('/templates/admin/css/crossorder.css', $_style) );
     }
     
     function admin_menu() {
@@ -20,7 +21,7 @@ class CrossOrderAdmin extends CrossOrder_Common {
     }
 
     function removekey( $name ) {
-        delete_option( okey.'_'.$name );
+        delete_option( self::okey.'_'.$name );
     }
 
     function _link_create() {
@@ -188,6 +189,15 @@ class CrossOrderAdmin extends CrossOrder_Common {
 
         $post = get_post($this->the_loop_id());
         $post = $this->loop_post;
+
+        $s = get_post_type_object($post->post_type);
+        $this->loop_post->_edit_link = get_admin_url().sprintf($s->_edit_link, $post->ID).'&action=edit';
+
+
+            $this->loop_post->blog_id = get_current_blog_id();
+
+        $this->loop_post->blog_name = get_bloginfo('name');
+
         setup_postdata( $post );
     }
 
@@ -202,6 +212,9 @@ class CrossOrderAdmin extends CrossOrder_Common {
     }
     function the_loop_blog_id() {
         return $this->loop_post->blog_id;
+    }
+    function the_loop_blog_name() {
+        return $this->loop_post->blog_name;
     }
 
     function manager() {
@@ -240,12 +253,12 @@ class CrossOrderAdmin extends CrossOrder_Common {
 
     function _action_manager() {
         if ( ! current_user_can( $this->role_edit ) ) return $this->_error();
-        require_once(dirname(__FILE__).'/templates/admin/manager.php');
+        require_once(TTTINC_CROSSORDER.'/templates/admin/manager.php');
     }
 
     function _action_main() {
         if ( ! current_user_can( $this->role_order ) ) return $this->_error();
-        require_once(dirname(__FILE__).'/templates/admin/main.php');
+        require_once(TTTINC_CROSSORDER.'/templates/admin/main.php');
     }
 
     function _action_remove() {
@@ -264,64 +277,64 @@ class CrossOrderAdmin extends CrossOrder_Common {
         if ( ! current_user_can( $this->role_edit ) ) return $this->_error();
 
         $this->_action_filter_update();
-        require_once(dirname(__FILE__).'/templates/admin/edit.php');
+        require_once(TTTINC_CROSSORDER.'/templates/admin/edit.php');
     }
 
     function _action_order() {
         if ( ! current_user_can( $this->role_order ) ) return $this->_error();
 
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $ref = 'crossorder_'.$_GET['slug'];
+            $this->restore_current_blog();
 
-        $this->restore_current_blog();
 
-        if ( $_POST['new_order'] ) {
-            $s = preg_split('/,/',$_POST['new_order']);
-            $this->do_order( $s );
+            if (empty($_POST['new_order'])) {
+                $this->remove_bkey('order_'.$_GET['slug']);
+            }
+            else {
+                $s = preg_split('/,/',$_POST['new_order']);
+                $this->do_order( $s );
 
-            foreach( $s as $value) {
+                foreach( $s as $value) {
 
-                list($blog_id,$post_id) = $this->_get_blog_post_id($value);
+                    list($blog_id,$post_id) = $this->_get_blog_post_id($value);
 
-                if (defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE) {
-                    switch_to_blog($blog_id);
+                    if (defined('WP_ALLOW_MULTISITE') && WP_ALLOW_MULTISITE) {
+                        switch_to_blog($blog_id);
+                    }
+
+                    $gmt = get_option( 'gmt_offset' );
+                    $gmt_string = '+0000';
+                    
+                    $refFrom = $_POST['date_from_'.$blog_id.'_'.$post_id];
+                    $refTo = $_POST['date_to_'.$blog_id.'_'.$post_id];
+
+                    if ( isset($refFrom) && isset($refTo) ) {
+
+                        $from = DateTime::createFromFormat('Y/m/d H:iP',$refFrom.$gmt_string );
+                        $to = DateTime::createFromFormat('Y/m/d H:iP',$refTo.$gmt_string );
+
+                        $m = array(
+                            'from_orig' => $refFrom,
+                            'from' => $from->format('U'),
+                            'to_orig' => $refTo,
+                            'to' => $to->format('U')
+                        );
+
+                        delete_post_meta( $post_id, $ref );
+                        add_post_meta( $post_id, $ref, $m );
+                    }
+                    else {
+                        delete_post_meta( $post_id, $ref );
+                    }
+
                 }
-
-                $gmt = get_option( 'gmt_offset' );
-                $gmt_string = '+0000';
-
-                // if ( $gmt > 0 )
-                //     $gmt_string = '+'.sprintf('%1$02d',$gmt).'00';
-                // else
-                //     $gmt_string = '-'.sprintf('%1$02d',$gmt).'00';
-                
-                $ref = 'crossorder_'.$_GET['slug'];
-                $refFrom = $_POST['date_from_'.$blog_id.'_'.$post_id];
-                $refTo = $_POST['date_to_'.$blog_id.'_'.$post_id];
-
-                if ( isset($refFrom) && isset($refTo) ) {
-
-                    $from = DateTime::createFromFormat('Y/m/d H:iP',$refFrom.$gmt_string );
-                    $to = DateTime::createFromFormat('Y/m/d H:iP',$refTo.$gmt_string );
-                    // echo $fecha->format('Y-m-d');
-                    $m = array(
-                        'from_orig' => $refFrom,
-                        'from' => $from->format('U'),
-                        'to_orig' => $refTo,
-                        'to' => $to->format('U')
-                    );
-
-                    delete_post_meta( $post_id, $ref );
-                    add_post_meta( $post_id, $ref, $m );
-                }
-                else {
-                    delete_post_meta( $post_id, $ref );
-                }
-
             }
         }
 
         $this->restore_current_blog();
 
-        require_once(dirname(__FILE__).'/templates/admin/order.php');
+        require_once(TTTINC_CROSSORDER.'/templates/admin/order.php');
     }
 
     function do_order( $order ) {
@@ -377,5 +390,3 @@ class CrossOrderAdmin extends CrossOrder_Common {
         $this->bkey('filters_'.$_slug, $_filter_params);
     }
 }
-
-?>

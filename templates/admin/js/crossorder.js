@@ -10,7 +10,7 @@ jQuery(document).ready(function($) {
 
         var order = new Array(0);
         $("#crossorder_order ul li").each(function(i,o) {
-            var blog_id = $(this).find('.blog_id a');
+            var blog_id = $(this).find('.blog_id');
             var id = $(this).find('.id a');
 
             if (!blog_id)
@@ -53,6 +53,24 @@ jQuery(document).ready(function($) {
         var p = $(this).parent();
         p.removeClass('active');
         p.find('input[type=text]').val('');
+    });
+
+    $('#crossorder_orig .add').click(function() {
+        event.preventDefault();
+        event.stopPropagation();
+        var s = $(this).parent();
+        $(this).remove();
+        s.prependTo('#crossorder_order ul');
+    });
+
+    $('#crossorder_order .remove').click(function() {
+        event.preventDefault();
+        event.stopPropagation();
+        if (confirm('You want to remove this element from the order?')) {
+            $(this).parent().fadeOut(function() {
+                this.remove();
+            });
+        }
     });
 
 });
